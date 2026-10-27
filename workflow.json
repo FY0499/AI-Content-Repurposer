@@ -1,0 +1,249 @@
+{
+  "name": "AI Content Repurposer",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "AI Content Repurposer",
+        "formDescription": "Paste your original content (post, article, or video summary) and get ready-to-publish versions for LinkedIn, X (Twitter), and Instagram.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Original Content",
+              "fieldType": "textarea",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "buttonLabel": "Generate"
+        }
+      },
+      "id": "2f78c8ad-a5ef-48d1-b76a-a20830b2ba35",
+      "name": "Content Input Form",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        432,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  model: \"llama-3.3-70b-versatile\",\n  temperature: 0.7,\n  messages: [\n    {\n      role: \"system\",\n      content: \"You are a social media content repurposing expert. Given original content, output ONLY valid JSON (no markdown fences, no explanation) with exactly these keys: 'linkedin' (a professional post, 3-5 short paragraphs, include a call to action), 'twitter' (a single tweet under 280 characters, punchy tone), 'instagram' (an engaging caption with 3-5 relevant hashtags at the end). Write the output in the SAME language as the original content.\"\n    },\n    {\n      role: \"user\",\n      content: $json['Original Content']\n    }\n  ]\n}) }}",
+        "options": {}
+      },
+      "id": "04663fb7-db64-434a-83dc-aac65a945d9a",
+      "name": "Generate Repurposed Content",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        656,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.choices[0].message.content;\nlet cleaned = raw.trim();\ncleaned = cleaned.replace(/^```json\\s*/i, '').replace(/^```\\s*/i, '').replace(/```\\s*$/i, '');\n\nlet parsed;\ntry {\n  parsed = JSON.parse(cleaned);\n} catch (e) {\n  parsed = {\n    linkedin: 'PARSE ERROR - check raw output',\n    twitter: 'PARSE ERROR - check raw output',\n    instagram: 'PARSE ERROR - check raw output'\n  };\n}\n\nconst original = $('Content Input Form').first().json['Original Content'];\n\nreturn [{\n  json: {\n    original: original,\n    linkedin: parsed.linkedin || '',\n    twitter: parsed.twitter || '',\n    instagram: parsed.instagram || '',\n    generatedAt: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "cc957897-8130-42fb-9522-8fd90fbd6dd8",
+      "name": "Parse AI Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1lJWs1A0Yi3rVkR5X60l71oPKVhm0k5eeAGy-Q1CmDL8",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "الورقة1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Original ": "={{ $json.original }}",
+            "LinkedIn ": "={{ $json.linkedin }}",
+            "Twitter ": "={{ $json.twitter }}",
+            "Instagram ": "={{ $json.instagram }}",
+            "GeneratedAt": "={{ $json.generatedAt }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Original ",
+              "displayName": "Original ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIn ",
+              "displayName": "LinkedIn ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Twitter ",
+              "displayName": "Twitter ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Instagram ",
+              "displayName": "Instagram ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "GeneratedAt",
+              "displayName": "GeneratedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "0aed2f78-b04f-4ca3-ab93-f0b5374a63bd",
+      "name": "Save to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1104,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "1120179307",
+        "text": "=✅ New content generated!\n\n📎 LinkedIn:\n{{ $json['LinkedIn '] }}\n\n🐦 Twitter/X:\n{{ $json['Twitter '] }}\n\n📸 Instagram:\n{{ $json['Instagram '] }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "e0414068-01a8-4e6c-aa5a-8c875f772a53",
+      "name": "Send to Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1552,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "function cleanText(text) {\n  if (!text) return '';\n  // إزالة رموز markdown اللي ممكن تسبب مشكلة بتيليجرام\n  return text.replace(/[*_`\\[\\]]/g, '');\n}\n\nconst item = $input.first().json;\n\nreturn [{\n  json: {\n    ...item,\n    linkedin: cleanText(item.linkedin),\n    twitter: cleanText(item.twitter),\n    instagram: cleanText(item.instagram)\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1328,
+        -64
+      ],
+      "id": "0912e889-ad95-471e-945e-d2c16229bd32",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Content Input Form": {
+      "main": [
+        [
+          {
+            "node": "Generate Repurposed Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Repurposed Content": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Response": {
+      "main": [
+        [
+          {
+            "node": "Save to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "meta": {},
+  "nodeGroups": [],
+  "tags": []
+}
