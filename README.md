@@ -13,3 +13,5 @@ Keep API credentials private. End-to-end testing is not confirmed.
 
 ## Project status
 This README documents the project scope and setup expectations. The workflow export must be present in the repository before it can be imported; validate the finished workflow in your own n8n instance before relying on it.
+
+<img width="889" height="160" alt="image" src="https://github.com/user-attachments/assets/65e887af-fe85-499b-bc80-0cd0053d215f" />
