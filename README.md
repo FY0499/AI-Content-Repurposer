@@ -1,17 +1,20 @@
 # AI Content Repurposer
 
-An n8n workflow concept for transforming a source piece of content into platform-specific drafts for social channels such as LinkedIn, X, and Instagram.
+I built this n8n workflow to turn one piece of content into ready-to-review posts for LinkedIn, X (Twitter), and Instagram.
+
+<img width="889" height="160" alt="AI Content Repurposer workflow demo" src="https://github.com/user-attachments/assets/65e887af-fe85-499b-bc80-0cd0053d215f" />
+
+## How it works
+
+1. The user submits the original content through a form.
+2. The workflow sends it to an AI model to create platform-specific versions.
+3. The response is formatted and organized.
+4. The generated posts are saved to Google Sheets and sent through Telegram.
+
+## Technologies
+
+n8n, Groq API, Llama 3.3, JavaScript, Google Sheets, and Telegram.
 
 ## Setup
-1. Import the workflow JSON once added to this repository.
-2. Configure the AI provider credentials in n8n.
-3. Review generated content before publishing; do not auto-publish without human approval.
-4. Test output formatting and platform limits.
 
-## Security and testing
-Keep API credentials private. End-to-end testing is not confirmed.
-
-## Project status
-This README documents the project scope and setup expectations. The workflow export must be present in the repository before it can be imported; validate the finished workflow in your own n8n instance before relying on it.
-
-<img width="889" height="160" alt="image" src="https://github.com/user-attachments/assets/65e887af-fe85-499b-bc80-0cd0053d215f" />
+Import [workflow.json](./workflow.json) into n8n, configure the AI API, Google Sheets, and Telegram credentials, then connect your own sheet and Telegram chat.
