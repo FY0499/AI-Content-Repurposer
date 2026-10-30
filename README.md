@@ -1,7 +1,5 @@
 # AI Content Repurposer
 
-I built and tested this workflow from start to finish.
-
 I built this n8n workflow to turn one piece of content into ready-to-review posts for LinkedIn, X (Twitter), and Instagram.
 
 <img width="889" height="160" alt="AI Content Repurposer workflow demo" src="https://github.com/user-attachments/assets/65e887af-fe85-499b-bc80-0cd0053d215f" />
