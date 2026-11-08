@@ -11,6 +11,14 @@ I built this n8n workflow to turn one piece of content into ready-to-review post
 3. The response is formatted and organized.
 4. The generated posts are saved to Google Sheets and sent through Telegram.
 
+## Main features
+
+- Form-based content submission.
+- AI-generated versions for LinkedIn, X (Twitter), and Instagram.
+- Platform-specific content formatting.
+- Generated content saved to Google Sheets.
+- Telegram delivery of the generated posts.
+
 ## Technologies
 
 n8n, Groq API, Llama 3.3, JavaScript, Google Sheets, and Telegram.
